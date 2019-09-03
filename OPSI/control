@@ -1,0 +1,39 @@
+[Package]
+version: 1
+depends: 
+
+[Product]
+type: localboot
+id: teska-gdata-newserver
+name: teska-gdata-newserver
+description: Setzt für Gdata einen neuen Server in der Registry des Clients
+advice: 
+version: 1.0
+priority: 0
+licenseRequired: False
+productClasses: 
+setupScript: setup.opsiscript
+uninstallScript: 
+updateScript: 
+alwaysScript: 
+onceScript: 
+customScript: 
+userLoginScript: 
+
+[ProductProperty]
+type: unicode
+name: newserver
+multivalue: False
+editable: True
+description: Neue Serverip vom Gdata Server
+values: [""]
+default: [""]
+
+[Changelog]
+teska-gdata-newserver (1.0-1) testing; urgency=low
+
+  * Initial package
+
+ -- Andreas Kratzer <kratzer@lmz-bw.de>  Tue, 03 Sep 2019 15:59:18 +0000
+
+

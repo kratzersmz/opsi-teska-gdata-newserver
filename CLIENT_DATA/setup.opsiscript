@@ -1,0 +1,75 @@
+; Copyright (c) uib gmbh (www.uib.de)
+; This sourcecode is owned by uib
+; and published under the Terms of the General Public License.
+; credits: http://www.opsi.org/credits/
+ 
+[Actions]
+requiredWinstVersion >= "4.10.8.6"
+ 
+DefVar $MsiId$
+DefVar $UninstallProgram$
+DefVar $LogDir$
+DefVar $ProductId$  
+DefVar $MinimumSpace$
+DefVar $InstallDir$
+DefVar $ExitCode$
+DefVar $LicenseRequired$
+DefVar $LicenseKey$
+DefVar $LicensePool$
+DefVar $newserver$
+ 
+Set $LogDir$ = "%SystemDrive%\tmp"
+ 
+; ----------------------------------------------------------------
+; - Please edit the following values                             -
+; ----------------------------------------------------------------
+;$ProductId$ should be the name of the product in opsi
+; therefore please: only lower letters, no umlauts, 
+; no white space use '-' as a seperator
+Set $ProductId$       = "Gdata New Server Setting"
+Set $MinimumSpace$    = "1 MB"
+; the path were we find the product after the installation
+Set $LicenseRequired$ = "false"
+Set $LicensePool$     = "p_" + $ProductId$
+; ----------------------------------------------------------------
+ 
+if not(HasMinimumSpace ("%SystemDrive%", $MinimumSpace$))
+	LogError "Not enough space on %SystemDrive%, " + $MinimumSpace$ + " on drive %SystemDrive% needed for " + $ProductId$
+	isFatalError
+	; Stop process and set installation status to failed
+else
+	comment "Show product picture"
+ 
+	if FileExists("%ScriptPath%\delsub32.ins")
+		comment "Start uninstall sub section"
+		Sub "%ScriptPath%\delsub32.ins"
+	endif
+ 
+	Message "Installing " + $ProductId$ + " ..."
+ 
+	if $LicenseRequired$ = "true"
+		comment "Licensing required, reserve license and get license key"
+		Sub_get_licensekey
+	endif
+ 
+        set $newserver$ = GetProductProperty("newserver","false")
+        if ($newserver$ = "false")
+          comment "No New server passed, exititing"
+          stop "No new server passed, exiting"
+        endif
+	comment "Patch Registry"
+	Registry_install /SysNative
+ 
+ 
+endif
+
+   
+[Registry_install]
+openkey [HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\G DATA\AVKClient]
+deletevar "SecondaryServer"
+deletevar "Subnetserver"
+set "Server" = REG_SZ:"$newserver$"
+
+openkey [HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\G DATA\AVKClient\Neuralyzer\1]
+add "ConfData" = REG_SZ:"3"
+
