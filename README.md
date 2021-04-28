@@ -1,1 +1,3 @@
 # opsi-teska-gdata-newserver
+
+This opsi packages sets the a new server gdata server to clients registry. Usefull if the host of your gdata server has changed.....
